@@ -3,8 +3,6 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>2026 国庆欧洲行 · Visual Tripbook</title>
-<link rel="preconnect" href="https://unpkg.com">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{--bg:#f3f0e9;--paper:#fffdf9;--ink:#1e292d;--muted:#748083;--blue:#244a5c;--green:#6e8275;--gold:#bd8c50;--line:#deded8;--soft:#edf1ee}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
@@ -56,13 +54,50 @@ h1{font-size:clamp(38px,8vw,78px);letter-spacing:-.05em;line-height:.95;margin:8
 .alertbox{background:#fff7e7;border:1px solid #ead8ad;border-radius:16px;padding:13px;font-size:12px;line-height:1.55}
 @media(max-width:800px){.prepgrid,.weatherband,.packlayers{grid-template-columns:1fr}}
 
+
+.todayhero{background:linear-gradient(135deg,#17394b,#557568);color:#fff;border-radius:24px;padding:20px;margin-bottom:14px}
+.todayhero .bigdate{font-size:31px;font-weight:900;letter-spacing:-.03em}
+.todayhero .todaytheme{opacity:.9;margin-top:5px}
+.todaygrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:14px}
+.todaymap{height:420px;border-radius:20px;overflow:hidden;background:#dce5e2}
+.install-sheet{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:9999;align-items:flex-end;justify-content:center}
+.install-sheet.show{display:flex}
+.install-card{width:min(620px,100%);background:#fffdf9;border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -20px 50px rgba(0,0,0,.2)}
+.install-card h3{margin:0 0 10px}.install-card ol{font-size:13px;line-height:1.7;color:#526064;padding-left:22px}
+.install-close{width:100%;border:0;background:#17394b;color:white;border-radius:12px;padding:11px;font-weight:800}
+@media(max-width:800px){.todaygrid{grid-template-columns:1fr}.todaymap{height:360px}}
+
+
+.static-route{height:520px;position:relative;background:
+linear-gradient(135deg,rgba(36,74,92,.08),rgba(110,130,117,.12)),
+radial-gradient(circle at 18% 28%,rgba(189,140,80,.12),transparent 22%),
+radial-gradient(circle at 78% 68%,rgba(80,130,150,.10),transparent 24%),
+#f7f8f5;overflow:hidden}
+.static-route .route-watermark{position:absolute;right:18px;bottom:14px;font-size:11px;color:#9aa4a1}
+.static-route svg{width:100%;height:100%;display:block}
+.route-label{font-size:12px;font-weight:800;fill:#243b45}
+.route-sub{font-size:10px;fill:#6c7778}
+.route-dot{fill:#315e70;stroke:white;stroke-width:3}
+.route-line{fill:none;stroke:#315e70;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.route-alt{stroke:#b98546;stroke-dasharray:8 8}
+.navbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.navbtn{font-size:10px;font-weight:700;background:#f0f3f1;border:1px solid #d7ddd8;border-radius:7px;padding:4px 7px}
+
 </style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#17394b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="欧洲行">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+
 </head>
 <body>
 <section class="hero"><div class="heroin"><div class="eyebrow">Private Visual Tripbook</div><h1>2026 欧洲行</h1><p>Paris · Côte d'Azur · Swiss Riviera · 10/02—10/10</p></div></section>
 <main class="wrap">
 <div class="kpis"><div class="kpi"><b>2</b><span>Paris nights</span></div><div class="kpi"><b>3</b><span>Nice nights</span></div><div class="kpi"><b>3</b><span>Montreux nights</span></div><div class="kpi"><b>8</b><span>total nights</span></div></div>
-<div class="nav"><button class="active" data-v="route">地图动线</button><button data-v="places">景点</button><button data-v="food">餐饮</button><button data-v="decisions">待决策</button><button data-v="cost">交通费用</button><button data-v="prep">出行准备</button></div>
+<div class="nav"><button class="active" data-v="route">地图动线</button><button data-v="places">景点</button><button data-v="food">餐饮</button><button data-v="decisions">待决策</button><button data-v="cost">交通费用</button><button data-v="prep">出行准备</button><button data-v="today">Today</button></div>
 
 <section id="route" class="view active">
 <h2>地图动线</h2>
@@ -101,7 +136,7 @@ h1{font-size:clamp(38px,8vw,78px);letter-spacing:-.05em;line-height:.95;margin:8
 <div class="place"><img src="https://static.mycity.travel/manage/uploads/6/33/841880/1/glacier-3000-peak-walk-vue-complete-av_COVER.jpg" loading="lazy"><div class="pbody"><h3>Glacier 3000</h3><div class="facts"><span class="fact">10/09 Plan A</span><span class="fact">天气决定</span><span class="rating">Google 4.6</span></div><div class="desc">这趟唯一的真正高山冰川体验：缆车上到 3000m，Peak Walk、冰川与高山视野是核心。因此当天能见度和风，远比“提前买票”重要。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Glacier+3000+Col+du+Pillon">地图</a><a class="btn" target="_blank" href="https://www.glacier3000.ch/en">官网</a></div></div></div>
 <div class="place"><img src="https://dimg04.c-ctrip.com/images/1me1l12000tkrjy5m5CE3_W_750_0_Q90.jpg?proc=source%2Ftripcommunity" loading="lazy"><div class="pbody"><h3>Lavaux</h3><div class="facts"><span class="fact">10/09 Plan B</span><span class="fact">秋季梯田</span><span class="rating">Lavaux Cully Google 4.8</span></div><div class="desc">如果高山条件一般，这里不是“退而求其次”：葡萄梯田、Lake Geneva 与小村组成完全不同的瑞士景观，也更符合你们自然与小镇的旅行主线。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Lavaux+Vineyards">地图</a></div></div></div>
 </div>
-<p class="note">景点图片优先使用中国网络更易访问的图源；Google 评分为 2026-09 查询快照，后续可能变化。地图与在线图片需要联网，核心行程文字可离线打开。</p>
+<p class="note">景点图片优先使用中国网络更易访问的图源；Google 评分为 2026-09 查询快照，后续可能变化。核心行程与每日静态动线可离线打开；在线图片和外部导航链接需要网络。</p>
 </section>
 
 <section id="food" class="view">
@@ -304,9 +339,14 @@ h1{font-size:clamp(38px,8vw,78px);letter-spacing:-.05em;line-height:.95;margin:8
 </div>
 </section>
 
+
+<section id="today" class="view">
+<h2>Today</h2>
+<div id="todayContent"></div>
+</section>
+
 </main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const days=[
 {date:"10/02",title:"Paris · Old Paris",theme:"老巴黎初印象：玛黑、岛屿与塞纳河夜景",tag:"2 个硬预约",center:[48.854,2.352],zoom:13,
@@ -369,30 +409,107 @@ const tabs=document.getElementById('daytabs'), panels=document.getElementById('d
 days.forEach((d,i)=>{
  const b=document.createElement('button'); b.textContent=d.date; if(i===0)b.classList.add('active'); b.onclick=()=>activateDay(i); tabs.appendChild(b);
  const p=document.createElement('div'); p.className='daypanel'+(i===0?' active':''); p.id='dp'+i;
- p.innerHTML=`<div class="mapcard"><div class="map" id="map${i}"></div></div>
+ p.innerHTML=`<div class="mapcard"><div class="static-route" id="map${i}"></div></div>
  <div class="side"><div class="card"><div class="daytitle"><div><h3>${d.title}</h3><div class="meta">${d.date}</div><div class="route-theme">${d.theme}</div></div><span class="badge">${d.tag}</span></div>
- <div class="steps">${d.stops.map((s,j)=>`<div class="step"><div class="dot">${j+1}</div><div><b>${s[0]}</b><div class="meta">${s[2]}</div></div></div>`).join('')}</div></div>
+ <div class="steps">${d.stops.map((s,j)=>`<div class="step"><div class="dot">${j+1}</div><div><b>${s[0]}</b><div class="meta">${s[2]}</div><div class="navbtns"><a class="navbtn" target="_blank" href="${mapLink(s[0],'amap')}">高德</a><a class="navbtn" target="_blank" href="${mapLink(s[0],'apple')}">Apple</a><a class="navbtn" target="_blank" href="${mapLink(s[0],'google')}">Google</a></div></div></div>`).join('')}</div></div>
  ${i===7?'<div class="card decisionbox"><b>当天只做一个主计划</b><p class="compact">Glacier 3000 和 Lavaux 都画在地图上，是为了看地理关系，不代表一天串两个。</p></div>':''}</div>`;
  panels.appendChild(p);
 });
-let maps=[];
-function initMap(i){
- if(maps[i] || typeof L==='undefined')return;
- const d=days[i], m=L.map('map'+i,{zoomControl:true,scrollWheelZoom:false}).setView(d.center,d.zoom);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(m);
- const latlngs=[];
- d.stops.forEach((s,j)=>{latlngs.push(s[1]); L.marker(s[1]).addTo(m).bindPopup(`<b>${j+1}. ${s[0]}</b><br>${s[2]}`);});
- if(i!==7)L.polyline(latlngs,{color:'#315e70',weight:4,opacity:.8}).addTo(m);
- else{L.polyline([latlngs[0],latlngs[1]],{color:'#315e70',weight:4}).addTo(m);L.polyline([latlngs[0],latlngs[2]],{color:'#b98546',weight:4,dashArray:'7,7'}).addTo(m);}
- maps[i]=m;
- setTimeout(()=>m.invalidateSize(),150);
+
+function projectStops(stops){
+  // Normalize each day's coordinates into a consistent local canvas.
+  const xs=stops.map(s=>s[1][1]), ys=stops.map(s=>s[1][0]);
+  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const pad=70, W=760, H=480;
+  return stops.map((s,i)=>{
+    const x = pad + (maxX===minX ? .5 : (s[1][1]-minX)/(maxX-minX))*(W-2*pad);
+    const y = H-pad - (maxY===minY ? .5 : (s[1][0]-minY)/(maxY-minY))*(H-2*pad);
+    return {x,y,name:s[0],meta:s[2],i};
+  });
+}
+function mapLink(name, engine){
+  const q=encodeURIComponent(name);
+  if(engine==='amap') return `https://uri.amap.com/search?keyword=${q}&callnative=1`;
+  if(engine==='apple') return `https://maps.apple.com/?q=${q}`;
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+function renderStaticMap(i){
+  const d=days[i], el=document.getElementById('map'+i); if(!el) return;
+  const p=projectStops(d.stops);
+  const pts=p.map(x=>`${x.x},${x.y}`).join(' ');
+  let lines='';
+  if(i===7 && p.length>=3){
+    lines=`<polyline points="${p[0].x},${p[0].y} ${p[1].x},${p[1].y}" class="route-line"/>
+           <polyline points="${p[0].x},${p[0].y} ${p[2].x},${p[2].y}" class="route-line route-alt"/>`;
+  }else{
+    lines=`<polyline points="${pts}" class="route-line"/>`;
+  }
+  const nodes=p.map((x,j)=>`
+    <g transform="translate(${x.x},${x.y})">
+      <circle r="12" class="route-dot"></circle>
+      <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="white">${j+1}</text>
+      <text x="18" y="-2" class="route-label">${x.name.replaceAll('&','&amp;')}</text>
+      <text x="18" y="13" class="route-sub">${x.meta.replaceAll('&','&amp;').slice(0,34)}</text>
+    </g>`).join('');
+  el.innerHTML=`<svg viewBox="0 0 760 480" role="img" aria-label="${d.title} route">
+      ${lines}${nodes}
+    </svg><div class="route-watermark">Static route · Works without map tiles</div>`;
 }
 function activateDay(i){
  [...document.querySelectorAll('.daytabs button')].forEach((b,j)=>b.classList.toggle('active',j===i));
  [...document.querySelectorAll('.daypanel')].forEach((p,j)=>p.classList.toggle('active',j===i));
- initMap(i);
+ renderStaticMap(i);
 }
-initMap(0);
-document.querySelectorAll('.nav button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(btn.dataset.v).classList.add('active');if(btn.dataset.v==='route')setTimeout(()=>maps.find(Boolean)?.invalidateSize(),100);});
+renderStaticMap(0);
+
+document.querySelectorAll('.nav button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(btn.dataset.v).classList.add('active');});
 </script>
+
+
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+const tripDayMap = {
+ "2026-10-02":0,"2026-10-03":1,"2026-10-04":2,"2026-10-05":3,"2026-10-06":4,
+ "2026-10-07":5,"2026-10-08":6,"2026-10-09":7,"2026-10-10":8
+};
+
+function renderToday() {
+  const c = document.getElementById('todayContent');
+  if (!c || typeof days === 'undefined') return;
+  const now = new Date();
+  const iso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  let idx = tripDayMap[iso];
+  const preview = idx === undefined;
+  if (preview) idx = 0;
+  const d = days[idx];
+
+  c.innerHTML = `
+    <div class="todayhero">
+      <div class="eyebrow">${preview ? 'TRIP PREVIEW' : 'TODAY'}</div>
+      <div class="bigdate">${d.date} · ${d.title}</div>
+      <div class="todaytheme">${d.theme || ''}</div>
+    </div>
+    ${preview ? '<div class="alertbox" style="margin-bottom:14px">当前不在旅行日期内，因此 Today 先预览 10/02。10/02–10/10 旅行期间，它会自动切到当天。</div>' : ''}
+    <div class="todaygrid">
+      <div class="mapcard"><div class="static-route todaymap" id="todayMap"></div></div>
+      <div class="card">
+        <div class="daytitle"><div><h3>今日动线</h3><div class="meta">${d.tag}</div></div></div>
+        <div class="steps">${d.stops.map((s,j)=>`<div class="step"><div class="dot">${j+1}</div><div><b>${s[0]}</b><div class="meta">${s[2]}</div><div class="navbtns"><a class="navbtn" target="_blank" href="${mapLink(s[0],'amap')}">高德</a><a class="navbtn" target="_blank" href="${mapLink(s[0],'apple')}">Apple</a><a class="navbtn" target="_blank" href="${mapLink(s[0],'google')}">Google</a></div></div></div>`).join('')}</div>
+      </div>
+    </div>`;
+  setTimeout(()=>{ const old=document.getElementById('map'+idx); renderStaticMap(idx); const src=document.getElementById('map'+idx); const target=document.getElementById('todayMap'); if(src&&target) target.innerHTML=src.innerHTML; },80);
+}
+
+document.querySelectorAll('.nav button[data-v]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(btn.dataset.v==='today') setTimeout(renderToday,50);
+  });
+});
+</script>
+
 </body></html>
