@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2026 国庆欧洲行 · Visual Tripbook</title>
+<link rel="preconnect" href="https://unpkg.com">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#f3f0e9;--paper:#fffdf9;--ink:#1e292d;--muted:#748083;--blue:#244a5c;--green:#6e8275;--gold:#bd8c50;--line:#deded8;--soft:#edf1ee}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:inherit;text-decoration:none} .hero{height:46vh;min-height:340px;background:linear-gradient(90deg,rgba(10,28,38,.72),rgba(10,28,38,.2)),url('https://media.architecturaldigest.com/photos/58c1d455b0c5b57268255e9c/master/w_1600%2Cc_limit/im-pei-architecture-0417-11.jpg') center/cover;display:flex;align-items:flex-end;color:white}
+.heroin{width:min(1180px,100%);margin:auto;padding:32px 22px} .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.8}
+h1{font-size:clamp(38px,8vw,78px);letter-spacing:-.05em;line-height:.95;margin:8px 0} .hero p{font-size:16px;opacity:.9}
+.wrap{max-width:1180px;margin:auto;padding:0 18px 80px}
+.nav{position:sticky;top:0;z-index:100;display:flex;gap:8px;overflow:auto;padding:12px 18px;margin:0 -18px 18px;background:rgba(243,240,233,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.05)}
+.nav button{border:0;background:white;padding:9px 13px;border-radius:999px;white-space:nowrap;color:#4e5a5e} .nav button.active{background:var(--blue);color:#fff}
+.view{display:none} .view.active{display:block} h2{font-size:28px;letter-spacing:-.03em;margin:26px 0 12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:-34px;position:relative;z-index:2}
+.kpi{background:rgba(255,255,255,.96);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.08)} .kpi b{font-size:22px} .kpi span{display:block;color:var(--muted);font-size:12px}
+.daytabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px} .daytabs button{border:1px solid #ddd;background:#fff;border-radius:12px;padding:8px 11px;white-space:nowrap} .daytabs button.active{background:var(--blue);color:white;border-color:var(--blue)}
+.daypanel{display:none} .daypanel.active{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:14px}
+.mapcard{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.06);border:1px solid #e4e3dd} .map{height:520px}
+.side{display:flex;flex-direction:column;gap:12px} .card{background:var(--paper);border:1px solid #e5e3dd;border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.04)} .daytitle{display:flex;justify-content:space-between;gap:10px} .daytitle h3{margin:0;font-size:22px}.route-theme{margin-top:7px;font-size:13px;line-height:1.45;color:#40545d;font-weight:700}
+.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.04em;background:#e4eee8;color:#315d49} .amber{background:#fff0d6;color:#8a5d1c} .purple{background:#eee9f5;color:#67547d}
+.steps{display:flex;flex-direction:column;gap:0;margin-top:8px} .step{display:grid;grid-template-columns:26px 1fr;gap:10px;position:relative;padding:7px 0 9px} .step:not(:last-child):before{content:"";position:absolute;left:12px;top:27px;bottom:-3px;width:1px;background:#cfd5d1} .dot{width:25px;height:25px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800} .step b{font-size:14px} .meta{font-size:11px;color:var(--muted);margin-top:2px}
+.price{font-weight:800;color:#8d6538} .compact{font-size:12px;line-height:1.5;color:#506064}
+.decisionbox{border-left:4px solid var(--gold);background:#fffaf0}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px} .place{border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.06);border:1px solid #e3e1db}
+.place img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#dfe4e1} .pbody{padding:14px 15px 16px} .place h3{margin:0 0 4px;font-size:18px} .desc{font-size:13px;line-height:1.55;color:#566266;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden} .facts{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0} .fact{font-size:10px;background:#f1f3f0;padding:5px 7px;border-radius:8px}.rating{font-size:11px;font-weight:800;color:#9a6c1f;background:#fff5dc;padding:5px 8px;border-radius:8px}
+.btns{display:flex;gap:7px;margin-top:10px} .btn{font-size:11px;font-weight:700;border:1px solid #d9ded9;border-radius:9px;padding:7px 9px;background:#fff} .btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.foodgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px} .food{background:#fff;border-radius:20px;overflow:hidden;border:1px solid #e4e1da;box-shadow:0 8px 24px rgba(0,0,0,.05)} .foodphoto{height:150px;background:linear-gradient(135deg,#c8b7a1,#705e4e);position:relative} .foodphoto::after{content:"餐厅照片 / 现场氛围";position:absolute;inset:auto 12px 10px;color:white;font-size:11px;background:rgba(0,0,0,.35);padding:4px 7px;border-radius:7px} .foodbody{padding:14px} .food h3{margin:0 0 4px} .why{font-size:12px;color:var(--muted)} .dish{font-size:12px;margin-top:9px;line-height:1.5} .citylabel{font-weight:800;color:var(--blue);margin:24px 0 10px}
+.table{background:#fff;border-radius:18px;padding:5px 16px;border:1px solid #e4e2dc} .r{display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:10px;padding:11px 0;border-bottom:1px solid #eee;font-size:12px} .r:last-child{border:0} .r strong:last-child{text-align:right}
+.note{font-size:12px;color:#667174;padding:10px 0}
+@media(max-width:800px){.kpis{grid-template-columns:repeat(2,1fr)} .daypanel.active{grid-template-columns:1fr} .map{height:390px} .gallery,.foodgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.gallery,.foodgrid{grid-template-columns:1fr} .hero{height:38vh} .r{grid-template-columns:1fr} .r strong:last-child{text-align:left}}
+
+.weather-foodgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch;width:100%;grid-column:1/-1}
+.weather-foodgrid .food{height:100%;display:flex;flex-direction:column}
+.weather-foodgrid .foodbody{display:flex;flex-direction:column;flex:1}
+.weather-foodgrid .btns{margin-top:auto}
+@media(max-width:800px){.weather-foodgrid{grid-template-columns:1fr}}
+
+
+.prepgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.prepcard{background:#fff;border:1px solid #e4e1da;border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.04)}
+.prepcard h3{margin:0 0 10px;font-size:18px}
+.checklist{display:grid;gap:8px}
+.check{display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:start;font-size:13px;line-height:1.5}
+.check input{margin-top:3px}
+.weatherband{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.weatheritem{background:#fff;border:1px solid #e4e1da;border-radius:16px;padding:13px}
+.weatheritem b{display:block;font-size:16px}.weatheritem span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.packlayers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.layer{background:#fff;border:1px solid #e5e1da;border-radius:16px;padding:13px}
+.layer h4{margin:0 0 6px;font-size:14px}.layer p{font-size:12px;color:#586466;line-height:1.5;margin:0}
+.alertbox{background:#fff7e7;border:1px solid #ead8ad;border-radius:16px;padding:13px;font-size:12px;line-height:1.55}
+@media(max-width:800px){.prepgrid,.weatherband,.packlayers{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<section class="hero"><div class="heroin"><div class="eyebrow">Private Visual Tripbook</div><h1>2026 欧洲行</h1><p>Paris · Côte d'Azur · Swiss Riviera · 10/02—10/10</p></div></section>
+<main class="wrap">
+<div class="kpis"><div class="kpi"><b>2</b><span>Paris nights</span></div><div class="kpi"><b>3</b><span>Nice nights</span></div><div class="kpi"><b>3</b><span>Montreux nights</span></div><div class="kpi"><b>8</b><span>total nights</span></div></div>
+<div class="nav"><button class="active" data-v="route">地图动线</button><button data-v="places">景点</button><button data-v="food">餐饮</button><button data-v="decisions">待决策</button><button data-v="cost">交通费用</button><button data-v="prep">出行准备</button></div>
+
+<section id="route" class="view active">
+<h2>地图动线</h2>
+<div class="daytabs" id="daytabs"></div>
+<div id="daypanels"></div>
+</section>
+
+<section id="places" class="view">
+<h2>景点</h2>
+<div class="gallery">
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/0105c12000igur60e9D9C_W_750_0.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Le Marais 玛黑区</h3><div class="facts"><span class="fact">10/02 上午</span><span class="fact">街区漫步</span><span class="rating">Google 4.6</span></div><div class="desc">你们第一天真正的“巴黎生活感”从这里开始。重点不是单一景点，而是孚日广场、Rue des Francs-Bourgeois、Vieille du Temple 一带的老街、店铺、咖啡馆和街区氛围。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Le+Marais+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/0105x12000iguq6671A5F_W_750_0.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Place des Vosges 孚日广场</h3><div class="facts"><span class="fact">10/02</span><span class="fact">免费</span><span class="rating">Google 4.6</span></div><div class="desc">巴黎最早规划成型的皇家广场之一。四周红砖建筑和拱廊围成安静的方形空间，很适合作为玛黑区散步的起点，坐一会儿比匆匆拍照更有感觉。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Place+des+Vosges+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://youimg1.c-ctrip.com/target/1A0u13000000ub6ezA306_W_10000_1200.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Notre-Dame + Île de la Cité</h3><div class="facts"><span class="fact">10/02 下午</span><span class="fact">免费</span><span class="rating">Google 4.7</span></div><div class="desc">巴黎历史中心最有分量的一段。这里不只是看一座教堂，而是把圣母院、岛屿、塞纳河和两岸城市关系一起感受。内部是否进入，当天看排队最合理。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Notre+Dame+de+Paris">地图</a><a class="btn" target="_blank" href="https://www.notredamedeparis.fr/en/">官网</a></div></div></div>
+
+<div class="place"><img src="https://youimg1.c-ctrip.com/target/100l0y000000lnuxi6753_W_10000_1200.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Vedettes du Pont Neuf · Seine Cruise</h3><div class="facts"><span class="fact">10/02 20:15</span><span class="fact">已购</span><span class="rating">Google 4.4</span></div><div class="desc">第一晚用一小时把巴黎两岸建筑与桥梁串起来。你们从 Pont Neuf 原码头出发再回到原点，既不会打乱动线，也正好把抵达日收得很轻松。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Vedettes+du+Pont+Neuf+Paris">地图</a><a class="btn" target="_blank" href="https://www.vedettesdupontneuf.com/">官网</a></div></div></div>
+
+<div class="place"><img src="https://media.architecturaldigest.com/photos/58c1d455b0c5b57268255e9c/master/w_1200%2Cc_limit/im-pei-architecture-0417-11.jpg" loading="lazy"><div class="pbody"><h3>Louvre</h3><div class="facts"><span class="fact">10/03 11:00</span><span class="fact">≈1.5h</span><span class="fact">已购</span><span class="rating">Google 4.7</span></div><div class="desc">不是深度刷馆。把它当作一次高密度的巴黎艺术与宫殿体验：看最想看的几件作品、感受宫殿空间，到点就离开，把下午留给城市。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Louvre+Museum+Paris">地图</a><a class="btn" target="_blank" href="https://www.louvre.fr/en">官网</a></div></div></div>
+
+<div class="place"><img src="https://www.qantas.com/content/dam/travelinsider/images/explore/europe/france/paris/jardin-de-tuileries/Jardin-de-Tuileries-paris-things-to-do-ThinkstockPhotos.jpg" loading="lazy"><div class="pbody"><h3>Jardin des Tuileries</h3><div class="facts"><span class="fact">10/03 中午</span><span class="fact">30–45min</span><span class="rating">Google 4.6</span></div><div class="desc">卢浮宫出来后的“换气区”。法式皇家园林、雕塑、水池和城市轴线感是重点；不用绕着花园逛一圈，顺着往协和广场方向横穿最合适。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Jardin+des+Tuileries+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://youimg1.c-ctrip.com/target/10060m000000df8iq1019_W_10000_1200.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Place de la Concorde</h3><div class="facts"><span class="fact">10/03</span><span class="fact">免费</span><span class="rating">Google 4.6</span></div><div class="desc">它是你们从 Louvre/Tuileries 进入巴黎西侧“纪念性轴线”的转折点。方尖碑、开阔广场，以及向西延伸的 Champs-Élysées 一起看最有意义。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Place+de+la+Concorde+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://youimg1.c-ctrip.com/target/10060m000000df8iq1019_W_10000_1200.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Champs-Élysées</h3><div class="facts"><span class="fact">10/03</span><span class="fact">走一段即可</span></div><div class="desc">不需要把 1.8 公里从头走到尾。你们只要体验从协和广场向凯旋门延伸的轴线与商业氛围，觉得开始重复时就直接坐地铁切到下一段。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Champs+Elysees+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://youimg1.c-ctrip.com/target/100l0y000000lnuxi6753_W_10000_1200.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Arc de Triomphe</h3><div class="facts"><span class="fact">10/03</span><span class="fact">只看外观</span><span class="rating">Google 4.7</span></div><div class="desc">你们这次不登顶，反而更适合把它当成巴黎十二条大道放射结构的视觉终点。看完外观和无名烈士墓区域，就继续去 Trocadéro。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Arc+de+Triomphe+Paris">地图</a></div></div></div>
+
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/100q0q000000gaexp84BF.jpg" loading="lazy"><div class="pbody"><h3>Trocadéro + Eiffel Tower</h3><div class="facts"><span class="fact">10/03 下午</span><span class="fact">当前不登塔</span><span class="rating">Google 4.7</span></div><div class="desc">Trocadéro 是你们看铁塔最完整、最“巴黎明信片”的视角。当前方案不登塔，把时间留给广场、河边和铁塔脚下，反而更适合后面去 Montmartre。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Place+du+Trocadero+Paris">地图</a><a class="btn" target="_blank" href="https://www.toureiffel.paris/en">官网</a></div></div></div>
+
+<div class="place"><img src="https://1.bp.blogspot.com/-5ganPszRb2s/UOQ2Z8x_9QI/AAAAAAAAIag/yWbDbeCyOXQ/s1600/Sacr%C3%A9_C%C5%93ur_Paris_Tourism.JPG" loading="lazy"><div class="pbody"><h3>Montmartre + Sacré-Cœur</h3><div class="facts"><span class="fact">10/03 傍晚</span><span class="fact">蓝调+夜景</span><span class="rating">Google 4.7</span></div><div class="desc">重点不是单独看圣心堂，而是从 Abbesses 一带慢慢上坡，经历街区、艺术家广场和巴黎天色变化。这里承担你们巴黎的“夜景高处视角”。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Sacre+Coeur+Paris">地图</a></div></div></div>
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/0104712000hmbltux5C09_W_750_0.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Èze</h3><div class="facts"><span class="fact">10/05</span><span class="fact">2–2.5h</span><span class="fact">植物园 €10</span><span class="rating">Google 4.7</span></div><div class="desc">石头小巷只是前半段，真正的高潮是一路走到 Jardin Exotique 顶部后打开的地中海视野。植物园是这座村最值得买的票。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Jardin+Exotique+d%27Eze">地图</a><a class="btn" target="_blank" href="https://jardinexotique-eze.fr/">官网</a></div></div></div>
+<div class="place"><img src="https://i.ck.cz/f/93251/69.jpg" loading="lazy"><div class="pbody"><h3>Villefranche-sur-Mer</h3><div class="facts"><span class="fact">10/05 下午</span><span class="fact">慢逛</span></div><div class="desc">与 Èze 的高处俯瞰形成反差：港口、彩色老城、Rue Obscure 和海湾都更贴近日常生活。这里适合吃午饭、坐下来，而不是赶景点。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Villefranche-sur-Mer">地图</a></div></div></div>
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/100n1b000001a3enh7B1A_C_1180_462.jpg" loading="lazy"><div class="pbody"><h3>Antibes</h3><div class="facts"><span class="fact">10/06</span><span class="fact">市场 ≤13:00</span><span class="rating">Marché Google 4.4</span></div><div class="desc">相比 Èze / Villefranche，它更像一个真正生活着的 Provençal 小城：市场、老城、港口和城墙层次更丰富，因此值得单独给一天。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Vieil+Antibes">地图</a></div></div></div>
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/1mf4w12000e8kiy5cABEF_W_640_0_Q90.jpg?proc=autoorient" loading="lazy"><div class="pbody"><h3>Gstaad</h3><div class="facts"><span class="fact">10/08</span><span class="fact">≈4h</span><span class="rating">GoldenPass Google 4.5</span></div><div class="desc">Gstaad 本镇不需要景点清单。Promenade、木屋街区、午饭和 café 就足以构成四小时；GoldenPass 才是这一天的主角。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Gstaad+Promenade">地图</a></div></div></div>
+<div class="place"><img src="https://static.mycity.travel/manage/uploads/6/33/841880/1/glacier-3000-peak-walk-vue-complete-av_COVER.jpg" loading="lazy"><div class="pbody"><h3>Glacier 3000</h3><div class="facts"><span class="fact">10/09 Plan A</span><span class="fact">天气决定</span><span class="rating">Google 4.6</span></div><div class="desc">这趟唯一的真正高山冰川体验：缆车上到 3000m，Peak Walk、冰川与高山视野是核心。因此当天能见度和风，远比“提前买票”重要。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Glacier+3000+Col+du+Pillon">地图</a><a class="btn" target="_blank" href="https://www.glacier3000.ch/en">官网</a></div></div></div>
+<div class="place"><img src="https://dimg04.c-ctrip.com/images/1me1l12000tkrjy5m5CE3_W_750_0_Q90.jpg?proc=source%2Ftripcommunity" loading="lazy"><div class="pbody"><h3>Lavaux</h3><div class="facts"><span class="fact">10/09 Plan B</span><span class="fact">秋季梯田</span><span class="rating">Lavaux Cully Google 4.8</span></div><div class="desc">如果高山条件一般，这里不是“退而求其次”：葡萄梯田、Lake Geneva 与小村组成完全不同的瑞士景观，也更符合你们自然与小镇的旅行主线。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Lavaux+Vineyards">地图</a></div></div></div>
+</div>
+<p class="note">景点图片优先使用中国网络更易访问的图源；Google 评分为 2026-09 查询快照，后续可能变化。地图与在线图片需要联网，核心行程文字可离线打开。</p>
+</section>
+
+<section id="food" class="view">
+<h2>餐饮</h2>
+<div class="citylabel">PARIS</div>
+<div class="foodgrid">
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Le Sergent Recruteur</h3><div class="facts"><span class="rating">Google 4.7</span><span class="fact">10/02 午餐</span><span class="fact">已预约</span></div><div class="why">Île Saint-Louis · 现代法餐 · 本次唯一正式 Michelin</div><div class="dish"><b>适合：</b>把正式法餐体验放在第一天中午；之后巴黎餐饮刻意换风格，不再重复高端法餐。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Le+Sergent+Recruteur+Paris">地图</a><a class="btn" target="_blank" href="https://www.lesergentrecruteur.fr/en/menus/">菜单</a></div></div></div>
+
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Sanukiya</h3><div class="facts"><span class="rating">Google 4.4</span><span class="fact">10/03 午餐首选</span></div><div class="why">Louvre / Palais Royal 附近 · 乌冬</div><div class="dish"><b>适合：</b>11:00 Louvre 逛约 1.5 小时后，想吃一顿轻松但认真做的日料。位置顺路、出餐相对快，不容易打乱下午轴线。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Sanukiya+Paris">地图</a></div></div></div>
+
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Kodawari Ramen · Tsukiji</h3><div class="facts"><span class="rating">Google 4.4</span><span class="fact">10/03 午餐备选</span></div><div class="why">Louvre 附近 · 拉面 · 筑地市场主题</div><div class="dish"><b>适合：</b>如果当天更想吃拉面和强主题氛围可以选它；热门时可能排队，因此优先级略低于 Sanukiya。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Kodawari+Ramen+Tsukiji+Paris">地图</a></div></div></div>
+
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Le Poulbot</h3><div class="facts"><span class="rating">Google 4.7</span><span class="fact">10/03 晚餐首选</span></div><div class="why">Montmartre · 法式小馆 / Bistro</div><div class="dish"><b>适合：</b>Montmartre 和 Sacré-Cœur 逛完后直接吃，不用再跨区。比再找一顿精致法餐更有“巴黎小馆”体验。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Le+Poulbot+Paris">地图</a></div></div></div>
+
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Bouillon Pigalle</h3><div class="facts"><span class="rating">Google 4.6</span><span class="fact">10/03 晚餐备选</span></div><div class="why">Pigalle / Montmartre · Bouillon 大众法餐</div><div class="dish"><b>适合：</b>想体验更大众、更热闹、更便宜的巴黎传统餐馆形态时选。可能排队，氛围也会比 Le Poulbot 更嘈杂。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Bouillon+Pigalle+Paris">地图</a></div></div></div>
+
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Enishi</h3><div class="facts"><span class="rating">Google 4.7</span><span class="fact">10/03 晚餐日料备选</span></div><div class="why">18区 · 日料</div><div class="dish"><b>适合：</b>如果连续吃法国菜后想换口味，又不想离开 Montmartre 一带太远，可以把它作为当晚日料备选。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Enishi+Paris+18">地图</a></div></div></div>
+</div>
+<div class="citylabel">NICE / CÔTE D'AZUR</div>
+<div class="foodgrid">
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Chez Pipo</h3><div class="facts"><span class="rating">Google 4.5</span></div><div class="why">Nice · 轻松小吃型</div><div class="dish"><b>重点：</b>Socca。适合第一晚或某次轻食，不需要把它当“大餐”。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Chez+Pipo+Nice">地图</a><a class="btn" target="_blank" href="https://www.chezpipo.fr/en">官网</a></div></div></div>
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Chez Acchiardo</h3><div class="facts"><span class="rating">Google 4.7</span></div><div class="why">Vieux Nice · 传统 Niçoise 正餐</div><div class="dish"><b>重点：</b>Daube / Farcis / 家常 Niçoise 菜。适合老城晚饭，而不是专程跨区。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Chez+Acchiardo+Nice">地图</a></div></div></div>
+<div class="food"><div class="foodphoto" style="background:url('https://i.ck.cz/f/93251/69.jpg') center/cover"></div><div class="foodbody"><h3>Villefranche 海湾午饭</h3><div class="why">10/05 · 不锁具体餐厅</div><div class="dish"><b>原则：</b>Èze 结束几点就几点到海边，现场找海鲜/地中海小馆，优先景观和节奏，不追“必吃榜”。</div></div></div>
+</div>
+<div class="citylabel">MONTREUX / GSTAAD</div>
+<div class="foodgrid">
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1579697096985-41fe1430e5df?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Caveau des Vignerons</h3><div class="facts"><span class="rating">Google 4.2</span></div><div class="why">Montreux · Fondue 候选</div><div class="dish"><b>为什么：</b>把本次唯一一顿 Fondue 放在 Montreux 最自然；还可搭配 Rösti / Chasselas。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Caveau+des+Vignerons+Montreux">地图</a><a class="btn" target="_blank" href="https://caveau-des-vignerons.ch/">官网</a></div></div></div>
+<div class="food"><div class="foodphoto" style="background:url('https://dimg04.c-ctrip.com/images/1mf4w12000e8kiy5cABEF_W_640_0_Q90.jpg?proc=autoorient') center/cover"></div><div class="foodbody"><h3>Posthotel Rössli · Stübli</h3><div class="facts"><span class="rating">Google 3.9</span></div><div class="why">Gstaad · 传统木屋氛围</div><div class="dish"><b>为什么：</b>就在核心 Promenade 动线上，适合 10/8 正常坐下来吃一顿，不压缩四小时小镇时间。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Posthotel+Rossli+Gstaad">地图</a></div></div></div>
+<div class="food"><div class="foodphoto" style="background:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80') center/cover"></div><div class="foodbody"><h3>Restaurant Müli</h3><div class="facts"><span class="rating">Google 4.7</span></div><div class="why">Gstaad · 稍精致备选</div><div class="dish"><b>适合：</b>如果当天更想吃季节菜而不是传统 Stübli，就选它；二选一即可。</div><div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Muli+Gstaad">地图</a></div></div></div>
+
+</div>
+<div class="citylabel">10/09 · WEATHER DAY</div>
+<div class="weather-foodgrid">
+<div class="food">
+  <div class="foodphoto" style="background:url('https://static.mycity.travel/manage/uploads/6/33/841880/1/glacier-3000-peak-walk-vue-complete-av_COVER.jpg') center/cover"></div>
+  <div class="foodbody">
+    <h3>Plan A · Restaurant Botta</h3>
+    <div class="why">Glacier 3000 · Scex Rouge 山顶</div>
+    <div class="dish"><b>适合：</b>如果 10/9 选 Glacier 3000，就直接在山上解决午饭，不额外绕路。主打瑞士/欧洲菜，景观本身也是用餐价值的一部分。</div>
+    <div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Botta+Glacier+3000">地图</a><a class="btn" target="_blank" href="https://www.glacier3000.ch/en/gastronomy">官网</a></div>
+  </div>
+</div>
+<div class="food">
+  <div class="foodphoto" style="background:url('https://dimg04.c-ctrip.com/images/1me1l12000tkrjy5m5CE3_W_750_0_Q90.jpg?proc=source%2Ftripcommunity') center/cover"></div>
+  <div class="foodbody">
+    <h3>Plan B · Café de Riex</h3>
+    <div class="facts"><span class="rating">Google 4.8</span></div>
+    <div class="why">Lavaux · Riex 葡萄村</div>
+    <div class="dish"><b>适合：</b>如果 10/9 选 Lausanne + Lavaux，可把一顿正餐放到梯田区，顺便喝当地 Chasselas；不需要再安排正式酒庄品鉴。</div>
+    <div class="btns"><a class="btn primary" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Cafe+de+Riex+Lavaux">地图</a><a class="btn" target="_blank" href="https://cafe-de-riex.ch/">官网</a></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="decisions" class="view">
+<h2>待决策</h2>
+<div class="foodgrid">
+<div class="card decisionbox"><div class="daytitle"><h3>Eiffel Tower</h3><span class="badge amber">10/03</span></div><p class="compact"><b>当前倾向：不登。</b><br>只有临近时突然很想登、且有舒服时段，才重新考虑。</p></div>
+<div class="card decisionbox"><div class="daytitle"><h3>Orangerie</h3><span class="badge purple">OPTIONAL</span></div><p class="compact">Louvre 结束后看审美疲劳和午饭时间。不要为了它压缩 Montmartre。</p></div>
+<div class="card decisionbox"><div class="daytitle"><h3>Cap d'Antibes</h3><span class="badge purple">OPTIONAL</span></div><p class="compact">天气 + 体力都好才加；否则老城与海边已经完整。</p></div>
+<div class="card decisionbox"><div class="daytitle"><h3>10/09 Weather Day</h3><span class="badge amber">二选一</span></div><p class="compact"><b>高山晴朗低风 → Glacier 3000</b><br>山上一般、湖区漂亮 → Lausanne + Lavaux。</p></div>
+</div>
+</section>
+
+<section id="cost" class="view">
+<h2>交通费用</h2>
+<div class="table">
+<div class="r"><strong>CDG → Paris</strong><span>Uber / 公交</span><strong>€45–55 /车 · €14/人</strong></div>
+<div class="r"><strong>Nice hotel → Èze</strong><span>Uber preferred</span><strong>€22–25 /车</strong></div>
+<div class="r"><strong>Èze → Villefranche</strong><span>Uber preferred</span><strong>≈ €16 /车</strong></div>
+<div class="r"><strong>Villefranche → Nice</strong><span>TER</span><strong>≈ €3 /人起</strong></div>
+<div class="r"><strong>Nice ↔ Antibes</strong><span>TER</span><strong>≈ €7 /人/程</strong></div>
+<div class="r"><strong>Nice → NCE</strong><span>Uber vs Tram</span><strong>€20–21 /车 · €10/人</strong></div>
+<div class="r"><strong>GVA → Montreux</strong><span>SBB</span><strong>CHF 35–45 /人</strong></div>
+<div class="r"><strong>Montreux station ↔ hotel</strong><span>Taxi for luggage</span><strong>CHF 15–25 /车</strong></div>
+<div class="r"><strong>GoldenPass</strong><span>First + seat reservation</span><strong>CHF 272 /2人 · 已购</strong></div>
+<div class="r"><strong>Glacier 3000 Plan A</strong><span>Mobilis combo candidate</span><strong>CHF 99 /人</strong></div>
+</div>
+<div class="note">Uber / Taxi 是参考价；现场以 App 为准。普通市内单次票不再在主页面占空间。</div>
+</section>
+
+<section id="prep" class="view">
+<h2>出行准备</h2>
+
+<div class="weatherband">
+  <div class="weatheritem"><b>Paris</b><span>10月初常见约 10–19°C</span><span>早晚偏凉，偶有雨；城市步行多。</span></div>
+  <div class="weatheritem"><b>Nice / Côte d'Azur</b><span>常见约 15–23°C</span><span>白天温和，海边有风；晴天体感可偏暖。</span></div>
+  <div class="weatheritem"><b>Montreux / Lavaux</b><span>常见约 8–17°C</span><span>湖区早晚明显更凉，阴天体感下降快。</span></div>
+  <div class="weatheritem"><b>Glacier 3000</b><span>3000m 高山环境</span><span>可能接近或低于 0°C，风大时体感更低；与 Montreux 完全是两套穿法。</span></div>
+</div>
+
+<div class="citylabel">衣物策略 · 关键是“可叠穿”，不是带四季四套衣服</div>
+<div class="packlayers">
+  <div class="layer"><h4>基础层</h4><p>短袖 / 薄长袖为主。Nice 晴天可单穿，Paris 和瑞士也能作为内搭。</p></div>
+  <div class="layer"><h4>中间层</h4><p>薄针织、卫衣或轻量抓绒 1–2 件。Paris 早晚、Montreux 湖边会高频使用。</p></div>
+  <div class="layer"><h4>外层</h4><p>轻薄防风防雨外套必带。若去 Glacier 3000，再叠加轻薄羽绒 / 保暖外套。</p></div>
+</div>
+
+<div class="prepgrid" style="margin-top:14px">
+  <div class="prepcard">
+    <h3>衣物与鞋</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>短袖 / 薄长袖若干，适配 Nice 与室内。</span></label>
+      <label class="check"><input type="checkbox"> <span>薄针织 / 卫衣 / 抓绒 1–2 件。</span></label>
+      <label class="check"><input type="checkbox"> <span>轻薄防风防雨外套 1 件。</span></label>
+      <label class="check"><input type="checkbox"> <span>轻薄羽绒或同等级保暖层 1 件——主要为 Glacier 3000 / 瑞士寒冷日备用。</span></label>
+      <label class="check"><input type="checkbox"> <span>长裤为主；Nice 可准备一套偏轻薄的裤装。</span></label>
+      <label class="check"><input type="checkbox"> <span>舒适、防滑、已磨合的步行鞋；不要旅行前临时穿新鞋。</span></label>
+      <label class="check"><input type="checkbox"> <span>若 10/9 去 Glacier 3000：厚袜、薄手套、帽子/耳部保暖建议带上。</span></label>
+      <label class="check"><input type="checkbox"> <span>太阳镜：南法海边和高山都很实用。</span></label>
+    </div>
+  </div>
+
+  <div class="prepcard">
+    <h3>南法海边要不要带泳装？</h3>
+    <div class="compact">建议<b>带一套泳装</b>，占空间很小，但保留选择权。10月初 Nice 海水通常已经偏凉，是否下海高度看个人耐冷和当天阳光；更现实的是海边散步、晒太阳、坐在海滩。</div>
+    <div class="checklist" style="margin-top:10px">
+      <label class="check"><input type="checkbox"> <span>泳装 1 套</span></label>
+      <label class="check"><input type="checkbox"> <span>轻便拖鞋 / 凉鞋可选，不必专门带厚重海滩装备。</span></label>
+      <label class="check"><input type="checkbox"> <span>防晒霜；10月仍建议带，尤其 Èze / 海边 / Glacier 3000。</span></label>
+    </div>
+  </div>
+
+  <div class="prepcard">
+    <h3>证件与支付</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>护照原件；同时保存护照资料页电子备份。</span></label>
+      <label class="check"><input type="checkbox"> <span>申根签证 / 入境相关材料按实际签证状态准备。</span></label>
+      <label class="check"><input type="checkbox"> <span>往返机票、酒店、TGV、GoldenPass、Louvre、游船等确认单离线保存。</span></label>
+      <label class="check"><input type="checkbox"> <span>至少 2 张不同网络的 Visa / Mastercard，分开存放。</span></label>
+      <label class="check"><input type="checkbox"> <span>少量欧元现金 + 少量瑞郎现金即可，主体刷卡。</span></label>
+      <label class="check"><input type="checkbox"> <span>境外旅行保险：医疗、航班延误、行李等保障。</span></label>
+    </div>
+  </div>
+
+  <div class="prepcard">
+    <h3>手机 / 网络 / App</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>Google Maps：提前下载 Paris、Nice、Lake Geneva 区域离线地图。</span></label>
+      <label class="check"><input type="checkbox"> <span>SNCF Connect：法国火车票 / TER 查询。</span></label>
+      <label class="check"><input type="checkbox"> <span>Lignes d'Azur：Nice 市内公交 / Tram 查询。</span></label>
+      <label class="check"><input type="checkbox"> <span>SBB Mobile：瑞士火车、站台、实时换乘。</span></label>
+      <label class="check"><input type="checkbox"> <span>Uber：Paris / Nice 关键路段备用。</span></label>
+      <label class="check"><input type="checkbox"> <span>航空公司 App：Air China + easyJet。</span></label>
+      <label class="check"><input type="checkbox"> <span>eSIM / 漫游方案提前开通；确认瑞士也包含在套餐里。</span></label>
+      <label class="check"><input type="checkbox"> <span>重要票据保存到 Apple Wallet / 手机文件，同时截屏留备份。</span></label>
+    </div>
+  </div>
+
+  <div class="prepcard">
+    <h3>电源与随身电子设备</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>欧标 Type C 转换插头；法国主要用 C/E，瑞士常见 C/J。</span></label>
+      <label class="check"><input type="checkbox"> <span>优先带一个支持 100–240V 的多口 GaN 充电器，减少转换头数量。</span></label>
+      <label class="check"><input type="checkbox"> <span>充电宝按航空规定随身携带，不托运。</span></label>
+      <label class="check"><input type="checkbox"> <span>USB-C / Lightning 线备份至少 1 根。</span></label>
+      <label class="check"><input type="checkbox"> <span>耳机、相机/手机存储空间提前清理。</span></label>
+    </div>
+  </div>
+
+  <div class="prepcard">
+    <h3>药品与小物</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>日常处方药与原包装 / 必要说明。</span></label>
+      <label class="check"><input type="checkbox"> <span>基础肠胃药、止痛药、创可贴、晕车药按个人习惯准备。</span></label>
+      <label class="check"><input type="checkbox"> <span>折叠伞；Paris / 瑞士秋季都值得带。</span></label>
+      <label class="check"><input type="checkbox"> <span>纸巾、湿巾、小包装消毒用品。</span></label>
+      <label class="check"><input type="checkbox"> <span>折叠购物袋 / 轻便双肩包，白天比一直拖大包舒服。</span></label>
+    </div>
+  </div>
+</div>
+
+<div class="citylabel">出发前最后检查</div>
+<div class="prepgrid">
+  <div class="prepcard">
+    <h3>提前 1–2 周</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>检查所有酒店、航班、TGV、GoldenPass、Louvre、游船预约是否都在正确日期。</span></label>
+      <label class="check"><input type="checkbox"> <span>确认银行卡已开通境外支付，并知道境外异常交易如何解锁。</span></label>
+      <label class="check"><input type="checkbox"> <span>确认 eSIM / 国际漫游覆盖法国和瑞士。</span></label>
+      <label class="check"><input type="checkbox"> <span>把本 HTML、DOC、关键订单都下载到手机本地。</span></label>
+      <label class="check"><input type="checkbox"> <span>检查两个 28 寸箱的航空托运行李额度，尤其 easyJet 段。</span></label>
+    </div>
+  </div>
+  <div class="prepcard">
+    <h3>提前 2–3 天</h3>
+    <div class="checklist">
+      <label class="check"><input type="checkbox"> <span>看 Paris / Nice / Montreux 最新天气，按实际温度微调衣服。</span></label>
+      <label class="check"><input type="checkbox"> <span>10/5 复核 Èze 公交/道路状况，虽然主计划用 Uber。</span></label>
+      <label class="check"><input type="checkbox"> <span>10/8 再确认 GoldenPass 车次与座位订单。</span></label>
+      <label class="check"><input type="checkbox"> <span>10/8 晚重点看 Glacier 3000 山顶天气、风、缆车状态，决定 10/9 Plan A / B。</span></label>
+      <label class="check"><input type="checkbox"> <span>确认返程日 Montreux → GVA 预留足够缓冲。</span></label>
+    </div>
+  </div>
+</div>
+
+<div class="alertbox" style="margin-top:14px">
+<b>防盗与行李：</b>Paris 地铁、热门景点、Nice 火车站等人多处，手机和钱包不要放外套口袋；护照与备用卡分开放。两个大箱的长距离移动尽量使用电梯、Taxi / Uber 最后一公里，不为了省几欧元强行拖箱走石板路。
+</div>
+</section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const days=[
+{date:"10/02",title:"Paris · Old Paris",theme:"老巴黎初印象：玛黑、岛屿与塞纳河夜景",tag:"2 个硬预约",center:[48.854,2.352],zoom:13,
+stops:[
+["Hotel",[48.8467,2.3695],"CDG→酒店 · Uber €45–55/车 或 €14/人"],
+["Place des Vosges",[48.8555,2.3656],"上午弹性"],
+["Le Sergent Recruteur",[48.8518,2.3566],"午餐 · 已预约"],
+["Notre-Dame",[48.8530,2.3499],"免费 · 当天看预约/排队"],
+["Pont Neuf",[48.8571,2.3414],"20:15 游船 · 已购"]]},
+{date:"10/03",title:"Paris · Grand Paris",theme:"巴黎经典轴线：艺术、城市空间与蒙马特夜景",tag:"Louvre 11:00",center:[48.866,2.315],zoom:13,
+stops:[
+["Louvre",[48.8606,2.3376],"11:00 · 已购 · 约1.5h"],
+["Tuileries",[48.8635,2.3275],"30–45min"],
+["Concorde",[48.8656,2.3212],"继续向西"],
+["Arc de Triomphe",[48.8738,2.2950],"外观"],
+["Trocadéro",[48.8627,2.2876],"Eiffel 周边 · 暂不登塔"],
+["Montmartre",[48.8867,2.3431],"傍晚 → 夜景"]]},
+{date:"10/04",title:"Paris → Nice",theme:"从巴黎到地中海：抵达 Nice 后只做轻松散步",tag:"TGV 6175",center:[43.7009,7.2700],zoom:13,
+stops:[
+["Nice-Ville",[43.7049,7.2619],"16:06 抵达"],
+["DoubleTree",[43.7044,7.2632],"入住"],
+["Place Masséna",[43.6971,7.2706],"傍晚散步"],
+["Vieux Nice",[43.6961,7.2766],"老城"],
+["Promenade",[43.6950,7.2658],"日落/海边"]]},
+{date:"10/05",title:"Èze + Villefranche",theme:"从山顶石头小镇一路下到海湾",tag:"Uber + TER",center:[43.717,7.322],zoom:12,
+stops:[
+["Holiday Inn Nice",[43.6993,7.2646],"寄存行李"],
+["Èze Village",[43.7276,7.3615],"Uber €22–25/车"],
+["Jardin Exotique",[43.7271,7.3612],"现场 €10/人"],
+["Villefranche",[43.7047,7.3120],"Uber ≈€16/车"],
+["Nice",[43.7049,7.2619],"TER ≈€3/人起"]]},
+{date:"10/06",title:"Antibes",theme:"普罗旺斯小城生活：市场、老城、港口与海",tag:"TER day",center:[43.581,7.125],zoom:14,
+stops:[
+["Antibes Station",[43.5851,7.1191],"Nice→Antibes · TER≈€7/人"],
+["Marché Provençal",[43.5803,7.1270],"优先13:00前"],
+["Vieil Antibes",[43.5806,7.1249],"老城"],
+["Port Vauban",[43.5862,7.1270],"港口/城墙"]]},
+{date:"10/07",title:"Nice → Montreux",theme:"从蔚蓝海岸切换到日内瓦湖",tag:"Flight + SBB",center:[46.438,6.91],zoom:12,
+stops:[
+["Geneva Airport",[46.2381,6.1090],"15:00 抵达"],
+["Montreux Station",[46.4355,6.9107],"SBB CHF35–45/人"],
+["Golf Hôtel René Capt",[46.4304,6.9194],"Taxi CHF15–25/车"]]},
+{date:"10/08",title:"GoldenPass + Gstaad",theme:"火车本身就是风景：GoldenPass + Gstaad",tag:"已购",center:[46.46,7.02],zoom:10,
+stops:[
+["Montreux",[46.4355,6.9107],"09:32 GPX"],
+["Gstaad",[46.4723,7.2869],"≈4h"],
+["Montreux",[46.4356,6.9108],"17:25 返回"]]},
+{date:"10/09",title:"Weather Day",theme:"看天气选高山冰川，或秋日湖畔葡萄梯田",tag:"二选一",center:[46.45,6.93],zoom:9,
+stops:[
+["Montreux",[46.4355,6.9107],"出发"],
+["Glacier 3000",[46.3530,7.2044],"Plan A · 晴朗低风"],
+["Lavaux",[46.4939,6.7460],"Plan B · 湖区天气好"]]},
+{date:"10/10",title:"Montreux → GVA",theme:"湖边慢慢收尾，给返程留足余量",tag:"CA620 18:40",center:[46.34,6.45],zoom:9,
+stops:[
+["Hotel",[46.4304,6.9194],"慢上午"],
+["Montreux Station",[46.4355,6.9107],"Taxi最后一公里"],
+["Geneva Airport",[46.2381,6.1090],"18:40 起飞"]]},
+];
+const tabs=document.getElementById('daytabs'), panels=document.getElementById('daypanels');
+days.forEach((d,i)=>{
+ const b=document.createElement('button'); b.textContent=d.date; if(i===0)b.classList.add('active'); b.onclick=()=>activateDay(i); tabs.appendChild(b);
+ const p=document.createElement('div'); p.className='daypanel'+(i===0?' active':''); p.id='dp'+i;
+ p.innerHTML=`<div class="mapcard"><div class="map" id="map${i}"></div></div>
+ <div class="side"><div class="card"><div class="daytitle"><div><h3>${d.title}</h3><div class="meta">${d.date}</div><div class="route-theme">${d.theme}</div></div><span class="badge">${d.tag}</span></div>
+ <div class="steps">${d.stops.map((s,j)=>`<div class="step"><div class="dot">${j+1}</div><div><b>${s[0]}</b><div class="meta">${s[2]}</div></div></div>`).join('')}</div></div>
+ ${i===7?'<div class="card decisionbox"><b>当天只做一个主计划</b><p class="compact">Glacier 3000 和 Lavaux 都画在地图上，是为了看地理关系，不代表一天串两个。</p></div>':''}</div>`;
+ panels.appendChild(p);
+});
+let maps=[];
+function initMap(i){
+ if(maps[i] || typeof L==='undefined')return;
+ const d=days[i], m=L.map('map'+i,{zoomControl:true,scrollWheelZoom:false}).setView(d.center,d.zoom);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(m);
+ const latlngs=[];
+ d.stops.forEach((s,j)=>{latlngs.push(s[1]); L.marker(s[1]).addTo(m).bindPopup(`<b>${j+1}. ${s[0]}</b><br>${s[2]}`);});
+ if(i!==7)L.polyline(latlngs,{color:'#315e70',weight:4,opacity:.8}).addTo(m);
+ else{L.polyline([latlngs[0],latlngs[1]],{color:'#315e70',weight:4}).addTo(m);L.polyline([latlngs[0],latlngs[2]],{color:'#b98546',weight:4,dashArray:'7,7'}).addTo(m);}
+ maps[i]=m;
+ setTimeout(()=>m.invalidateSize(),150);
+}
+function activateDay(i){
+ [...document.querySelectorAll('.daytabs button')].forEach((b,j)=>b.classList.toggle('active',j===i));
+ [...document.querySelectorAll('.daypanel')].forEach((p,j)=>p.classList.toggle('active',j===i));
+ initMap(i);
+}
+initMap(0);
+document.querySelectorAll('.nav button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(btn.dataset.v).classList.add('active');if(btn.dataset.v==='route')setTimeout(()=>maps.find(Boolean)?.invalidateSize(),100);});
+</script>
+</body></html>
